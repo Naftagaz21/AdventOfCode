@@ -1,9 +1,10 @@
 package main
 
-//https://github.com/pin2t/aoc2022/blob/main/07.go
 import (
 	"bufio"
+	"fmt"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -17,6 +18,25 @@ type dir struct {
 	parent *dir
 	files  []file
 	dirs   []*dir
+}
+
+func (d *dir) size() int {
+	result := 0
+	for _, file := range d.files {
+		result += file.size
+	}
+
+	for _, dir := range d.dirs {
+		result += dir.size()
+	}
+	return result
+}
+
+func (d *dir) forEach(f func(d *dir)) {
+	for _, dir := range d.dirs {
+		dir.forEach(f)
+	}
+	f(d)
 }
 
 func main() {
@@ -48,8 +68,25 @@ func main() {
 
 		} else {
 			lines := strings.Fields(line)
-			
+			var file file
+			fileSize, _ := strconv.Atoi(lines[0])
+			file.name = lines[1]
+			file.size = fileSize
+			current.files = append(current.files, file)
 		}
-
 	}
+
+	total := 0
+	unused_space := 70000000 - root.size()
+	min_space := 99999999
+	root.forEach(func(d *dir) {
+		size := d.size()
+		if size <= 100000 {
+			total += size
+		}
+		if size+unused_space >= 30000000 && size < min_space {
+			min_space = size
+		}
+	})
+	fmt.Println(total, min_space)
 }
