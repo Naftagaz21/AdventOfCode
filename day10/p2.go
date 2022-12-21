@@ -22,7 +22,6 @@ func checkCycle(valueArr []int, cycle int, register int) []int {
 	} else if cycle == 220 {
 		valueArr[5] = signalStrenght
 	}
-	fmt.Println(cycle, register)
 	return valueArr
 }
 
@@ -33,13 +32,19 @@ func main() {
 	lineIdx, register, addRegister := 0, 1, 0
 	cycleStop := false
 	valueArr := make([]int, 6)
-	
+	secondCycle := 0
 	for cycle := 2; cycle <= 1000; cycle++ {
-		if cycle%40 == 0 {
+		if (cycle-2)%40 == 0 {
 			fmt.Println("")
+			secondCycle = 0
 		}
 
-		fmt.Print(".")
+		if secondCycle == register-1 || secondCycle == register || secondCycle == register+1 {
+			fmt.Print("#")
+		} else {
+			fmt.Print(".")
+		}
+		secondCycle++
 
 		if lineIdx > len(inputLines)-1 {
 			break
@@ -66,7 +71,6 @@ func main() {
 			continue
 		}
 	}
-	fmt.Println(valueArr)
 	sum := 0
 	for _, val := range valueArr {
 		sum += val
